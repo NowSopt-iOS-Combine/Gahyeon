@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Combine
 import SnapKit
 import Then
 
@@ -14,6 +15,8 @@ final class LoginViewController: UIViewController, UISheetPresentationController
     
     // MARK: - Properties
     
+    private var viewModel: LoginViewModel!
+    var subscribtion = Set<AnyCancellable>()
     var name: String = ""
     
     // MARK: - UI Components
@@ -31,12 +34,34 @@ final class LoginViewController: UIViewController, UISheetPresentationController
         
         setAddTarget()
         setDelegate()
+        setPublisher()
     }
 }
 
 // MARK: - Extensions
 
 private extension LoginViewController {
+    func setPublisher() {
+        viewModel = LoginViewModel()
+        
+        //assign 메서드로 해당 publisher를 subscribe하여 전달된 값으로 viewModel의 usrIDInput, usrPasswordInput 프로퍼티의 값을 각각 변경
+        loginView.idTextField.publisher
+            .receive(on: RunLoop.main) // Scheduler를 RunLoop.main으로 지정
+        // RunLoop.main -> 터치 이벤트, 스크롤 이벤트 등 사용자 입력을 처리할 수 있는 Scheduler
+            .assign(to: \.usrIDInput, on: viewModel)
+            .store(in: &subscribtion)
+        
+        loginView.passwordTextField.publisher
+            .receive(on: RunLoop.main)
+            .assign(to: \.usrPasswordInput, on: viewModel)
+            .store(in: &subscribtion)
+        
+        viewModel.isFilled
+            .receive(on: RunLoop.main)
+            .assign(to: \.isEnabled, on: loginView.loginButton) // assign으로 값을 변경하는 path는 UIButton의 isEnalbed임. 어디에? loginButton에~
+            .store(in: &subscribtion)
+    }
+    
     func setAddTarget() {
         loginView.loginButton.addTarget(self, action: #selector(loginButtonDidTap), for: .touchUpInside)
         loginView.nicknameButton.addTarget(self, action: #selector(nicknameButtonTapped), for: .touchUpInside)
@@ -132,3 +157,4 @@ extension LoginViewController: NickNameDelegate {
         self.name = nickname
     }
 }
+
