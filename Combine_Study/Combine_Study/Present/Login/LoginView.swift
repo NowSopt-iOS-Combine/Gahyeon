@@ -30,6 +30,8 @@ final class LoginView: UIView {
     var eyeButton = UIButton(type: .custom)
     let clearButton = UIButton()
     
+    let realtimeLabel = UILabel()
+    
     // MARK: - Life Cycles
     
     override init(frame: CGRect) {
@@ -123,10 +125,15 @@ private extension LoginView {
             $0.titleLabel?.font = .systemFont(ofSize: 14)
             $0.backgroundColor = .clear
         }
+        
+        realtimeLabel.do {
+            $0.textColor = .white
+            $0.text = "TEST"
+        }
     }
     
     func setHierarchy() {
-        addSubviews(mainLabel, idTextField, passwordTextField, clearButton, eyeButton, loginButton, idFindButton, passwordFindButton, nonAccountLabel, nicknameButton)
+        addSubviews(mainLabel, idTextField, passwordTextField, clearButton, eyeButton, loginButton, idFindButton, passwordFindButton, nonAccountLabel, nicknameButton, realtimeLabel)
     }
     
     func setLayout() {
@@ -185,6 +192,11 @@ private extension LoginView {
             $0.leading.equalTo(nonAccountLabel.snp.trailing).offset(17)
             $0.height.equalTo(22)
             $0.width.equalTo(128)
+        }
+        
+        realtimeLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(loginButton.snp.bottom).offset(20)
         }
     }
 }

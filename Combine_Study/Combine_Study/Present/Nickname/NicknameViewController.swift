@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Combine
 import SnapKit
 import Then
 
@@ -52,13 +53,13 @@ private extension NicknameViewController {
 extension NicknameViewController: UITextFieldDelegate {
     // 한글만 가능하게
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-           let titleCharacter = string.cString(using: .utf8)
-           let isBackSpace = strcmp(titleCharacter, "\\b")
-           if string.hasCharacters() || isBackSpace == -92 {
-               return true
-           }
-           return false
-       }
+        let titleCharacter = string.cString(using: .utf8)
+        let isBackSpace = strcmp(titleCharacter, "\\b")
+        if string.hasCharacters() || isBackSpace == -92 {
+            return true
+        }
+        return false
+    }
     
     
     // textField 상태에 따라 saveButton 상태 활성화 유무
