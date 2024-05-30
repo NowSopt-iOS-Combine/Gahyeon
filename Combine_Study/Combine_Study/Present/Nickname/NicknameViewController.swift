@@ -20,10 +20,13 @@ final class NicknameViewController: UIViewController {
     // MARK: - Properties
     
     weak var delegate: NickNameDelegate?
+    private var nicknameviewModel = NicknameViewModel()
+    var subscribtion = Set<AnyCancellable>()
     
     // MARK: - UI Components
     
     private let nicknameView = NicknameView()
+    private let loginView = LoginView()
     
     // MARK: - Life Cycles
     
@@ -36,6 +39,7 @@ final class NicknameViewController: UIViewController {
         
         setAddTarget()
         setDelegate()
+        setPublisher()
     }
 }
 
@@ -47,6 +51,28 @@ private extension NicknameViewController {
     }
     func setAddTarget() {
         nicknameView.saveButton.addTarget(self, action: #selector(saveButtonDidTap), for: .touchUpInside)
+    }
+    
+    func setPublisher() {
+        
+        // nicknameTextField의 텍스트 변화를 구독하여 nicknameInput에 할당
+        nicknameView.nicknameTextField.publisher
+            .receive(on: RunLoop.main)
+            .assign(to: \.nicknameInput, on: nicknameviewModel)
+            .store(in: &subscribtion)
+        
+        nicknameviewModel.isFilled
+            .receive(on: RunLoop.main)
+            .assign(to: \.isEnabled, on: nicknameView.saveButton)
+            .store(in: &subscribtion)
+        
+//        nicknameviewModel.$nicknameInput
+//            .receive(on: RunLoop.main)
+//            .sink { [weak self] nickname in
+//                print(nickname)
+//                self?.loginView.realtimeLabel.text = nickname
+//            }
+//            .store(in: &subscribtion)
     }
 }
 

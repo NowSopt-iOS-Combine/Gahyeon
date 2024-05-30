@@ -16,12 +16,14 @@ final class LoginViewController: UIViewController, UISheetPresentationController
     // MARK: - Properties
     
     private var viewModel: LoginViewModel!
+    private var nicknameviewModel: NicknameViewModel!
     var subscribtion = Set<AnyCancellable>()
     var name: String = ""
     
     // MARK: - UI Components
     
     private let loginView = LoginView()
+    private let nicknameView = NicknameView()
     
     // MARK: - Life Cycles
     
@@ -43,6 +45,22 @@ final class LoginViewController: UIViewController, UISheetPresentationController
 private extension LoginViewController {
     func setPublisher() {
         viewModel = LoginViewModel()
+        nicknameviewModel = NicknameViewModel()
+
+        nicknameviewModel.$nicknameInput
+            .receive(on: RunLoop.main)
+            .sink { [weak self] nickname in
+                print(nickname)
+                self?.loginView.realtimeLabel.text = nickname
+            }
+            .store(in: &subscribtion)
+        
+//        nicknameviewModel.$nicknameInput
+//            .receive(on: RunLoop.main)
+//            .sink { [weak self] nickname in
+//                self?.loginView.realtimeLabel.text = nickname
+//            }
+//            .store(in: &subscribtion)
         
         //assign 메서드로 해당 publisher를 subscribe하여 전달된 값으로 viewModel의 usrIDInput, usrPasswordInput 프로퍼티의 값을 각각 변경
         loginView.idTextField.publisher
